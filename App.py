@@ -17,6 +17,89 @@ st.set_page_config(layout="wide", page_title="AeroGreen AI")
 st.title("🌱 AeroGreen AI - Smart Farming")
 
 # =====================================
+# CUSTOM CSS FOR VISUAL APPEAL
+# =====================================
+st.markdown("""
+<style>
+    /* Main App Background */
+    .stApp {
+        background-color: #f4fcf6;
+    }
+    
+    /* Sidebar Background */
+    [data-testid="stSidebar"] {
+        background-color: #e8f5e9;
+        border-right: 2px solid #c8e6c9;
+    }
+    
+    /* Tabs Styling */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+        background-color: #d1fae5;
+        padding: 10px;
+        border-radius: 12px;
+    }
+    .stTabs [data-baseweb="tab"] {
+        background-color: #a7f3d0;
+        border-radius: 8px;
+        padding: 10px 16px;
+        color: #065f46;
+        font-weight: 600;
+        border: none;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+        color: white !important;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    /* Button Styling */
+    .stButton > button {
+        background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+        color: white;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        transition: all 0.3s ease;
+    }
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(16, 185, 129, 0.3);
+        color: white;
+        border: none;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+    
+    /* Customization for Primary buttons */
+    .stButton > button[kind="primary"] {
+        background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    }
+    .stButton > button[kind="primary"]:hover {
+        background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+        box-shadow: 0 6px 12px rgba(2, 132, 199, 0.3);
+    }
+
+    /* Slider Track & Thumb Styling */
+    div[data-testid="stSliderTickBarMin"], div[data-testid="stSliderTickBarMax"] {
+        color: #065f46;
+    }
+    .stSlider [data-baseweb="slider"] {
+        accent-color: #10b981;
+    }
+    
+    /* Headers & Metrics text */
+    h1, h2, h3 {
+        color: #064e3b;
+    }
+    [data-testid="stMetricValue"] {
+        color: #047857;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# =====================================
 # CONSTANTS
 # =====================================
 FARM_SIZE = 100
@@ -934,6 +1017,9 @@ with tab4:
 # -------------------------------------
 # TAB 5: AeroGreen Drone Command
 # -------------------------------------
+# -------------------------------------
+# TAB 5: AeroGreen Drone Command
+# -------------------------------------
 with tab5:
     st.markdown("### 🛰️ Drone Command & Telemetry")
     d1, d2, d3, d4 = st.columns(4)
@@ -944,6 +1030,42 @@ with tab5:
     d3.metric("🎯 Detection Accuracy", f"{round(st.session_state.detection_accuracy, 1)}%")
     status_icon = "🟢" if st.session_state.drone_status == "Patrolling" else "🔴"
     d4.metric("📡 System Status", f"{status_icon} {st.session_state.drone_status}")
+
+    # ==========================================
+    # NEW: ADVANCED ONBOARD SENSORS
+    # ==========================================
+    st.markdown("---")
+    st.markdown("### 🔬 Onboard Environmental & Soil Sensors")
+    
+    # Generate simulated values based on real-world optimal ranges
+    co2_flux = round(random.uniform(1.5, 3.5), 2) # g/m²/h
+    ec_val = round(random.uniform(1.0, 2.5), 2)   # dS/m
+    n_val = random.randint(100, 160)
+    p_val = random.randint(40, 80)
+    k_val = random.randint(150, 250)
+    
+    sensor_c1, sensor_c2, sensor_c3 = st.columns(3)
+    
+    sensor_c1.metric(
+        label="💨 Soil Respiration (CO₂ Flux)", 
+        value=f"{co2_flux} g/m²/h", 
+        delta="Healthy Microbial Activity" if co2_flux > 2.0 else "Low Activity",
+        delta_color="normal" if co2_flux > 2.0 else "off"
+    )
+    
+    sensor_c2.metric(
+        label="⚡ Electrical Conductivity (EC)", 
+        value=f"{ec_val} dS/m", 
+        delta="Optimal Salinity" if 1.2 <= ec_val <= 2.2 else "Review Needed",
+        delta_color="normal" if 1.2 <= ec_val <= 2.2 else "inverse"
+    )
+    
+    sensor_c3.metric(
+        label="🧪 NPK Detection (mg/kg)", 
+        value=f"N:{n_val} | P:{p_val} | K:{k_val}", 
+        delta="Nutrient Balanced" if n_val > 120 else "Low Nitrogen",
+        delta_color="normal" if n_val > 120 else "inverse"
+    )
 
     st.markdown("---")
     col_info, col_gauge = st.columns([1, 1])
@@ -1067,7 +1189,6 @@ with tab5:
     if st.button("🔄 Reset Drone Path", key="tab5_reset"):
         st.session_state.drone_position = (0, 0)
         st.session_state.drone_path = [(0, 0)]
-
 # -------------------------------------
 # TAB 6: ML TRAINED MODELS
 # -------------------------------------
